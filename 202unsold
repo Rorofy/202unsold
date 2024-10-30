@@ -1,0 +1,110 @@
+#!/usr/bin/env python3
+
+import sys
+from math import *
+
+def jointProbabilityLaw(a, b, x, y):
+    proba = ((a - x) * (b - y)) / ((5 * a - 150) * (5 * b - 150))
+    return proba
+
+
+def getResult(a, b):
+    res = []
+    y = 10
+    while (y <= 50):
+        x = 10
+        while (x <= 50):
+            res.append(jointProbabilityLaw(a, b, x, y))
+            x += 10
+        y += 10
+    return res
+
+
+def getTotalY(res):
+    totalY = []
+    i = 0
+    while (i < 25):
+        totalY.append(res[i] + res[i + 1] + res[i + 2] + res[i + 3] + res[i + 4])
+        i += 5
+    return totalY
+
+
+def getTotalX(res):
+    totalX = []
+    i = 0
+    while (i < 5):
+        totalX.append(res[i] + res[i + 5] + res[i + 10] + res[i + 15] + res[i + 20])
+        i += 1
+    return totalX
+
+
+def printTab1(a, b):
+    res = getResult(a, b)
+    totalY = getTotalY(res)
+    totalX = getTotalX(res)
+    print("--------------------------------------------------------------------------------")
+    print("\tX=10\tX=20\tX=30\tX=40\tX=50\tY law")
+    print("Y=10\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f" % (res[0], res[1], res[2], res[3], res[4], totalY[0]))
+    print("Y=20\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f" % (res[5], res[6], res[7], res[8], res[9], totalY[1]))
+    print("Y=30\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f" % (res[10], res[11], res[12], res[13], res[14], totalY[2]))
+    print("Y=40\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f" % (res[15], res[16], res[17], res[18], res[19], totalY[3]))
+    print("Y=50\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f" % (res[20], res[21], res[22], res[23], res[24], totalY[4]))
+    print("X law\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f" % (totalX[0], totalX[1], totalX[2], totalX[3], totalX[4], 1))
+
+def getZ(res):
+    Z = []
+    Z.append(res[0])
+    Z.append(res[1] + res[5])
+    Z.append(res[2] + res[6] + res[10])
+    Z.append(res[3] + res[7] + res[11] + res[15])
+    Z.append(res[4] + res[8] + res[12] + res[16] + res[20])
+    Z.append(res[9] + res[13] + res[17] + res[21])
+    Z.append(res[14] + res[18] + res[22])
+    Z.append(res[19] + res[23])
+    Z.append(res[24])
+    return Z
+
+def printTab2(a, b):
+    Z = getZ(getResult(a, b))
+    print("--------------------------------------------------------------------------------")
+    print("z\t20\t30\t40\t50\t60\t70\t80\t90\t100")
+    print("p(Z=z)\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f" % (Z[0], Z[1], Z[2], Z[3], Z[4], Z[5], Z[6], Z[7], Z[8]))
+
+def printTab3(a, b):
+    res = getResult(a, b)
+    totalY = getTotalY(res)
+    totalX = getTotalX(res)
+    expectedX = 0.0
+    expectedY = 0.0
+    varianceX = 0.0
+    varianceY = 0.0
+    for i in range(0, 5):
+        expectedX += totalX[i] * (10 * (i + 1))
+        expectedY += totalY[i] * (10 * (i + 1))
+    for i in range(0, 5):
+        varianceX += ((10 * (i + 1)) - expectedX) * ((10 * (i + 1)) - expectedX) * totalX[i]
+        varianceY += ((10 * (i + 1)) - expectedY) * ((10 * (i + 1)) - expectedY) * totalY[i]
+    print("--------------------------------------------------------------------------------")
+    print("expected value of X:\t" + "%.1f" % (expectedX))
+    print("variance of X:\t\t" + "%.1f" % (varianceX))
+    print("expected value of Y:\t" + "%.1f" % (expectedY))
+    print("variance of Y:\t\t" + "%.1f" % (varianceY))
+    print("expected value of Z:\t" + "%.1f" % (expectedX + expectedY))
+    print("variance of Z:\t\t" + "%.1f" % (varianceX + varianceY))
+    print("--------------------------------------------------------------------------------")
+
+def main():
+    if (len(sys.argv) != 3):
+        sys.exit(84)
+    try:
+        a = int(sys.argv[1])
+        b = int(sys.argv[2])
+    except ValueError:
+        sys.exit(84)
+    if (a < 50 or b < 50):
+        sys.exit(84)
+    printTab1(a, b)
+    printTab2(a, b)
+    printTab3(a, b)
+
+main()
